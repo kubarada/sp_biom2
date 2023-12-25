@@ -66,6 +66,8 @@ Wn = fc/(0.5*fs)
 b, a = butter(filter_order, Wn, btype='low', analog=False)
 filtered_signal = lfilter(b, a, ecg)
 
+
+# filtering comparison
 plt.figure(figsize=(10, 6))
 plt.subplot(2, 1, 1)
 plt.plot(ecg_time, ecg, label='Původní signál')
@@ -76,6 +78,25 @@ plt.subplot(2, 1, 2)
 plt.plot(ecg_time, filtered_signal, label='Filtrovaný signál', color='red')
 plt.title('Filtrovaný signál')
 plt.grid(True)
+
+plt.tight_layout()
+plt.show()
+
+# spectrogram comparison
+plt.figure(figsize=(10, 6))
+plt.subplot(2, 1, 1)
+plt.specgram(ecg, Fs=fs, vmin=-20, vmax=50)
+plt.axhline(y=100, color='r', linestyle='--')
+plt.xlabel('t [s]')
+plt.ylabel('U [mV]')
+plt.title('Původní signál')
+
+plt.subplot(2, 1, 2)
+plt.specgram(filtered_signal, Fs=fs, vmin=-20, vmax=50)
+plt.axhline(y=100, color='r', linestyle='--')
+plt.xlabel('t [s]')
+plt.ylabel('U [mV]')
+plt.title('Filtrovaný signál')
 
 plt.tight_layout()
 plt.show()
