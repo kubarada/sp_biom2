@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from scipy.signal import butter, freqz
+from scipy.signal import lfilter
 import numpy as np
 
 # Define the path to your file
@@ -49,27 +50,32 @@ plt.title('EKG signál')
 plt.xlim([6, 10])
 plt.show()
 
-# Filter specifications
-fs = 360.0  # Sample rate, Hz
-lowcut = 0.5  # Low cutoff frequency, Hz
-highcut = 100.0  # High cutoff frequency, Hz
+# ploting spectogram
+plt.figure(figsize=(15, 5))
+plt.specgram(ecg, Fs=fs, vmin=-20, vmax=50)
+plt.title('Spektrogram')
+plt.ylabel('f [Hz]')
+plt.xlabel('t [s]')
+plt.show()
 
-# Design a Butterworth bandpass filter using the butter function
-b, a = butter(N=3, Wn=[lowcut/fs*2, highcut/fs*2], btype='band')  # N is the order of the filter
+fc = 100.0
+filter_order = 2
 
-# Frequency response of the filter
-w, h = freqz(b, a, worN=2000)
+Wn = fc/(0.5*fs)
 
-# Plot the frequency response.
-plt.figure()
-plt.plot(0.5*fs*w/np.pi, np.abs(h), 'b')
-plt.plot(lowcut, 0.5*np.sqrt(2), 'ko')
-plt.axvline(lowcut, color='k')
-plt.plot(highcut, 0.5*np.sqrt(2), 'ko')
-plt.axvline(highcut, color='k')
-plt.xlim(0, 0.5*fs)
-plt.title("Bandpass Filter Frequency Response")
-plt.xlabel('Frequency [Hz]')
-plt.ylabel('Gain')
-plt.grid()
+b, a = butter(filter_order, Wn, btype='low', analog=False)
+filtered_signal = lfilter(b, a, ecg)
+
+plt.figure(figsize=(10, 6))
+plt.subplot(2, 1, 1)
+plt.plot(ecg_time, ecg, label='Původní signál')
+plt.title('Původní signál')
+plt.grid(True)
+
+plt.subplot(2, 1, 2)
+plt.plot(ecg_time, filtered_signal, label='Filtrovaný signál', color='red')
+plt.title('Filtrovaný signál')
+plt.grid(True)
+
+plt.tight_layout()
 plt.show()
