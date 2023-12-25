@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 from scipy.signal import butter, freqz
 from scipy.signal import lfilter
 import numpy as np
+import heartpy as hp
+
 
 # Define the path to your file
 file_path = 'input/rada.txt'
@@ -100,3 +102,53 @@ plt.title('Filtrovaný signál')
 
 plt.tight_layout()
 plt.show()
+
+
+## determining heartrate
+wd, m = hp.process(filtered_signal, sample_rate=fs)
+# Get the calculated heart rate
+heart_rate = m['bpm']  # bpm stands for beats per minute
+print("Estimated Heart Rate:", heart_rate, "bpm")
+
+# Plot the filtered ECG signal
+plt.figure(figsize=(12, 4))
+plt.plot(filtered_signal, label='Filtrované EKG', color='blue')
+
+# Plot the detected R-peaks
+plt.scatter(wd['peaklist'], [filtered_signal[j] for j in wd['peaklist']], color='red', label='R-maxima')
+
+plt.title('ECG signál')
+plt.legend()
+plt.grid()
+plt.show()
+
+fft_result = np.fft.fft(filtered_signal)
+fft_freq = np.fft.fftfreq(filtered_signal.size, d=1/fs)
+
+# Calculate the power spectrum (magnitude of the FFT squared)
+power_spectrum = np.abs(fft_result) ** 2
+
+# Function for plotting
+def plot_signal_spectrum():
+    plt.figure(figsize=(12, 6))
+
+    plt.subplot(2, 1, 1)
+    plt.plot(ecg_time, filtered_signal)
+    plt.title('EKG signál')
+    plt.grid()
+    plt.xlabel('t [s]')
+    plt.ylabel('Amplitude')
+
+    plt.subplot(2, 1, 2)
+    plt.plot(fft_freq, power_spectrum)
+    plt.title('Výkonové spektrum')
+    plt.grid()
+    plt.xlabel('f [Hz]')
+    plt.ylabel('Power')
+    plt.xlim(0, 50)  # Limiting to show the relevant frequencies
+
+    plt.tight_layout()
+    plt.show()
+
+# Call the function to plot the signal and its frequency power spectrum
+plot_signal_spectrum()
