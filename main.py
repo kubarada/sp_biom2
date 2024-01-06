@@ -158,8 +158,8 @@ plt.plot(filtered_signal, label='Filtrované EKG', color='blue')
 plt.scatter(wd['peaklist'], [filtered_signal[j] for j in wd['peaklist']], color='red', label='R-maxima')
 
 print(len(qrst))
-qrst = qrst[50:600]
-qrst_time = qrst_time[50:600]
+qrst = qrst[80::]
+qrst_time = qrst_time[80::]
 plt.title('ECG signál')
 plt.legend()
 plt.grid()
